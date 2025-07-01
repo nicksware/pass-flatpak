@@ -2,12 +2,15 @@ name: CI
 on:
   push:
     branches: [main]
-    paths: [org.passwordstore.pass.json]
+    paths: 
+      - org.passwordstore.pass.json
+      - .github/workflows/flatpak.yml
   workflow_dispatch:
 
 permissions:
   contents: write
   packages: write
+  actions: read
 
 jobs:
   build:
