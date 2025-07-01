@@ -1,16 +1,15 @@
 name: CI
 on:
   push:
-    branches:
-      - main
-  pull_request:
+    branches: [main]
   workflow_dispatch:
+
 permissions:
-  contents: read
+  contents: write
   packages: write
+
 jobs:
-  flatpak:
-    name: "Flatpak"
+  build-flatpak:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-48
@@ -21,18 +20,11 @@ jobs:
         with:
           bundle: palette.flatpak
           manifest-path: org.passwordstore.pass.json
-          cache-key: flatpak-builder-${{ github.sha }}
-          verbose: true
-          upload-artifact: true
+          upload-artifact: false
   release:
-    name: Publish Flatpak as Release
-    needs: flatpak
+    needs: build-flatpak
     runs-on: ubuntu-latest
     steps:
-      - name: Download Flatpak artifact
-        uses: actions/download-artifact@v4.3.0
-        with:
-          name: palette.flatpak
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
@@ -43,12 +35,13 @@ jobs:
           release_name: "palette build #${{ github.run_number }}"
           draft: false
           prerelease: false
+
       - name: Upload Flatpak to Release
-        uses: actions/upload-artifact@v4.6.2
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./palette-x86_64.flatpak
-          asset_name: palette-x86_64.flatpak
+          asset_path: ./palette.flatpak
+          asset_name: palette.flatpak
           asset_content_type: application/octet-stream
