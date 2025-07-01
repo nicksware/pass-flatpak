@@ -2,6 +2,7 @@ name: CI
 on:
   push:
     branches: [main]
+    paths: [org.passwordstore.pass.json]
   workflow_dispatch:
 
 permissions:
@@ -9,7 +10,7 @@ permissions:
   packages: write
 
 jobs:
-  build-flatpak:
+  build:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-48
@@ -22,7 +23,7 @@ jobs:
           manifest-path: org.passwordstore.pass.json
           upload-artifact: false
   release:
-    needs: build-flatpak
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Create GitHub Release
