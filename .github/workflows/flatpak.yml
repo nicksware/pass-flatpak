@@ -2,7 +2,7 @@ name: CI
 on:
   push:
     branches: [main]
-    paths: 
+    paths:
       - org.passwordstore.pass.json
       - .github/workflows/flatpak.yml
   workflow_dispatch:
@@ -22,13 +22,18 @@ jobs:
       - uses: actions/checkout@v4
       - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
-          bundle: palette.flatpak
+          bundle: org.passwordstore.pass.flatpak
           manifest-path: org.passwordstore.pass.json
-          upload-artifact: false
+          upload-artifact: true
   release:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Download Flatpak artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: org.passwordstore.pass.flatpak
+          path: .
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
@@ -36,16 +41,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v${{ github.run_number }}
-          release_name: "palette build #${{ github.run_number }}"
+          release_name: "pass flatpak build #${{ github.run_number }}"
           draft: false
           prerelease: false
-
       - name: Upload Flatpak to Release
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./palette.flatpak
-          asset_name: palette.flatpak
+          asset_path: ./org.passwordstore.pass.flatpak
+          asset_name: org.passwordstore.pass.flatpak
           asset_content_type: application/octet-stream
