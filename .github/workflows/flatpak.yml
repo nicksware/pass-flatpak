@@ -32,7 +32,7 @@ jobs:
       - name: Download Flatpak artifact
         uses: actions/download-artifact@v4
         with:
-          name: org.passwordstore.pass.flatpak
+          name: org.passwordstore.pass-x86_64.flatpak
           path: .
       - name: Create GitHub Release
         id: create_release
@@ -50,6 +50,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./org.passwordstore.pass.flatpak
-          asset_name: org.passwordstore.pass.flatpak
+          asset_path: ./org.passwordstore.pass-x86_64.flatpak
+          asset_name: org.passwordstore.pass-x86_64.flatpak
           asset_content_type: application/octet-stream
