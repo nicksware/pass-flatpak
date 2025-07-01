@@ -24,3 +24,31 @@ jobs:
         cache-key: flatpak-builder-${{ github.sha }}
         verbose: true
         upload-artifact: true
+  release:
+    name: Publish Flatpak as Release
+    needs: flatpak
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Flatpak artifact  
+        uses: actions/download-artifact@v3  
+        with:
+          name: palette.flatpak
+      - name: Create GitHub Release  
+        id: create_release  
+        uses: actions/create-release@v1  
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }}
+          release_name: "palette build #${{ github.run_number }}"
+          draft: false
+          prerelease: false
+      - name: Upload Flatpak to Release  
+        uses: actions/upload-release-asset@v1  
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./palette-x86_64.flatpak
+          asset_name: palette-x86_64.flatpak
+          asset_content_type: application/octet-stream
