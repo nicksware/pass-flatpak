@@ -34,6 +34,7 @@ jobs:
         with:
           name: org.passwordstore.pass-x86_64.flatpak
           path: .
+      - run: tree
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
@@ -50,6 +51,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./org.passwordstore.pass-x86_64.flatpak
-          asset_name: org.passwordstore.pass-x86_64.flatpak
+          asset_path: *.flatpak
           asset_content_type: application/octet-stream
