@@ -20,7 +20,7 @@ jobs:
       - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
           bundle: org.passwordstore.pass.flatpak
-          manifest-path: org.passwordstore.pass.json
+          manifest-path: org.passwordstore.pass.yml
           upload-artifact: true
   release:
     needs: build
